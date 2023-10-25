@@ -1,6 +1,7 @@
-package com.vd.ormn.MODEL;
+package com.vd.orn.MODEL;
 
 
+import com.vd.orn.Instalacion;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

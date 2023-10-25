@@ -1,4 +1,4 @@
-package com.vd.ormn.util;
+package com.vd.orn.util;
 
 public class MasterUtil
 {

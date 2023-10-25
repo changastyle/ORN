@@ -1,7 +1,7 @@
-package com.vd.ormn;
+package com.vd.orn;
 
 
-import com.vd.ormn.util.MasterUtil;
+import com.vd.orn.util.MasterUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import  java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
@@ -79,6 +78,16 @@ public class ClaseORM
             rta += "        " + metodoLoop.toString() + ",\n";
         }
 
+
+        rta += "    ]\n";
+        rta += "    CONSTRAINTS:\n";
+        rta += "    [\n";
+        List<String> arrConstraints = getConstraints();
+        for( String constraintLoop: arrConstraints)
+        {
+            rta += "        " + constraintLoop.toString() + ",\n";
+        }
+
         rta += "    ]\n";
         return rta;
     }
@@ -95,8 +104,9 @@ public class ClaseORM
         {
             String nombreTabla = metodoRelLoop.getNombreClasePadre();
             String constraintLoop = plantillaConstraintInicial + " ADD FOREIGN KEY (`" + metodoRelLoop.getNombreFKSiSoyHijo() + "`) REFERENCES `" + nombreTabla +"`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;";
-//            arrConstraints.add(constraintLoop);
+            arrConstraints.add(constraintLoop);
         }
+
 
         return  arrConstraints;
     }
@@ -203,7 +213,8 @@ public class ClaseORM
                 {
                     String nombreAttCap = MasterUtil.capitalize(nombreATT);
                     String tipoDeLaLista = dameElTipoDeLista(nombreAttCap);
-                    MetodoORM metodoLoop = new MetodoORM(nombreATT,retType, retTypeFull,true, tipoDeLaLista);
+                    String fk = dameFKDelMethodoSegunAnnotation(nombreATT, false);
+                    MetodoORM metodoLoop = new MetodoORM(nombreATT,retType, retTypeFull,true, tipoDeLaLista , fk);
                     arrRta.add(metodoLoop);
                 }
                 else if(esUnTipoDatoPrimitivo(retType))
@@ -213,7 +224,7 @@ public class ClaseORM
                 }
                 else
                 {
-                    String fkSiSoyHijo = dameFKDelMethodoSegunAnnotation(nombreATT);
+                    String fkSiSoyHijo = dameFKDelMethodoSegunAnnotation(nombreATT , false);
                     MetodoORM metodoLoop = new MetodoORM(nombreATT,retType, retTypeFull,retType,fkSiSoyHijo);
                     arrRta.add(metodoLoop);
                 }
@@ -286,22 +297,41 @@ public class ClaseORM
 
         return rta;
     }
-    private String dameFKDelMethodoSegunAnnotation(String attBuscado)
+    public String dameFKDelMethodoSegunAnnotation(String methodNameBuscado, boolean verbose)
     {
         String rta = "";
 
         List<Field> arrFields = Arrays.stream(claseReflection.getDeclaredFields()).collect(Collectors.toList());
         for(Field fieldLoop : arrFields)
         {
-            if(fieldLoop.getName().equalsIgnoreCase(attBuscado))
+            if(verbose)
+            {
+                System.out.println("fieldLoop.getName():" + fieldLoop.getName());
+            }
+            if(fieldLoop.getName().equalsIgnoreCase(methodNameBuscado))
             {
                 List<Annotation> arrAnnotations = Arrays.asList(fieldLoop.getDeclaredAnnotations());
                 for(Annotation anoLoop : arrAnnotations)
                 {
-                    String valorFK = MasterUtil.substringBetween(anoLoop.toString(),"name=\"",",");
-                    rta = valorFK;
+                    String valorFK = "";
+                    if(methodNameBuscado.startsWith("arr"))
+                    {
+                        valorFK = MasterUtil.substringBetween(anoLoop.toString(),"mappedBy=\"",",");
+                        rta = valorFK;
+                    }
+                    else
+                    {
+                        String strAnotation = anoLoop.toString();
+                        if(strAnotation.contains("JoinColumn"))
+                        {
+                            valorFK = MasterUtil.substringBetween(strAnotation,"name=\"",",");
+                            rta = valorFK;
+                            System.out.println("ESTA! : " + valorFK);
+                        }
+
+                    }
 //                    System.out.println("ANO(" + valorFK +"):" );
-//                    System.out.println("ANO(" + valorFK +"):" + anoLoop);
+                    System.out.println("ANOTATION(" + methodNameBuscado +") : ["+ valorFK +"] DE : " + anoLoop);
                 }
 
 //                System.out.println(fieldLoop);

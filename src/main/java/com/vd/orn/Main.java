@@ -1,17 +1,8 @@
-package com.vd.ormn;
+package com.vd.orn;
 
-import com.vd.ormn.util.MasterUtil;
+import com.vd.orn.util.MasterUtil;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main
@@ -25,7 +16,8 @@ public class Main
 
 
         // 1 - LEER LA CARPETA:
-        List<File> arrFiles = ORN.readFolder(false);
+        String modeloFolder = ".\\src\\main\\java\\com\\vd\\orn\\MODEL";
+        List<File> arrFiles = ORN.readFolder( modeloFolder, false);
         for(File fileLoop : arrFiles)
         {
             // 2 - POR CADA ARCHIVO LEO Y PROCESO:
@@ -43,15 +35,8 @@ public class Main
             ClaseORM claseLoop = new ClaseORM(nombreClaseRAW);
             System.out.println(claseLoop);
             System.out.println("------------------------");
-//            nombreClaseNecesario = MasterUtil.reemplazarAll(nombreClaseNecesario, String.valueOf("\\\\"),".");
-//            nombreClaseNecesario = MasterUtil.reemplazarAll(nombreClaseNecesario, ".java","");
-//            Class claseReflection = Class.forName(nombreClaseNecesario);
-//            ClaseORM clase = new ClaseORM(claseReflection,fin);
-
-//            System.out.println("CLASE:"  + clase);
-
-//            ORN.crearConstraints(clase);
-            //            crearTabla(clase);
+            ORN.crearConstraints(claseLoop);
+            ORN.crearTabla(claseLoop);
         }
 
 

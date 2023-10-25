@@ -1,8 +1,5 @@
-package com.vd.ormn;
+package com.vd.orn;
 
-import com.vd.ormn.util.MasterUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -46,13 +43,13 @@ public class MetodoORM
         this.soyLista = false;
         this.tipoDeLaLista = "";
     }
-    public MetodoORM(String nombreMetodo, String retType, String retTypeFull, boolean soyLista , String nombreClaseDeLaLista)
+    public MetodoORM(String nombreMetodo, String retType, String retTypeFull, boolean soyLista , String nombreClaseDeLaLista , String nombreFKSiSoyHijo)
     {
         // CONSTRUCTOR PARA TIPO DE DATO LISTA:
         this.nombreMetodo = nombreMetodo;
         this.retType = retType;
         this.retTypeFull = retTypeFull;
-        this.nombreFKSiSoyHijo = "";
+        this.nombreFKSiSoyHijo = nombreFKSiSoyHijo;
 
         if(soyLista)
         {
@@ -66,80 +63,46 @@ public class MetodoORM
 
     public String getSQL()
     {
-        String sql = "";
+        String rta  = "";
 
-        return sql;
+        if(soyTipoDatoPrimitivo)
+        {
+            if(retType != null)
+            {
+                if (nombreMetodo.equalsIgnoreCase("id"))
+                {
+                    rta = nombreMetodo + " INT PRIMARY KEY";
+                }
+                else if (retType.equalsIgnoreCase("int"))
+                {
+                    rta = nombreMetodo + " INT";
+                }
+                else if(retType.equalsIgnoreCase("String"))
+                {
+                    rta = nombreMetodo + " VARCHAR(255)";
+                }
+                else if(retType.equalsIgnoreCase("LocalDate"))
+                {
+                    rta = nombreMetodo + " DATE NOT NULL";
+                }
+                else if(retType.equalsIgnoreCase("LocalDateTime"))
+                {
+                    rta = nombreMetodo + " DATETIME NOT NULL";
+                }
+            }
+        }
+        else if(soyLista)
+        {
+            rta = getNombreFKSiSoyHijo() + " INT";
+        }
+        else if(soyHijo)
+        {
+            rta = getNombreFKSiSoyHijo() + " INT";
+        }
+
+        return rta;
     }
 
-    //    private String nombre;
-//    private String tipo;
-//    private String clase;
-//    private String nombreFK;
-//    public boolean soyLista;
-//    public boolean soyRelacion;
-//    private ClaseORM claseDBPadre;
-//    private String retType;
-//    private String retTypeLista;
-
-//    public String getSQL()
-//    {
-//        String rta  = "";
-//        if (nombre.equalsIgnoreCase("id"))
-//        {
-//            rta = nombre + " INT PRIMARY KEY";
-//            this.soyRelacion = false;
-//        }
-//        else if (clase.equalsIgnoreCase("int"))
-//        {
-//            rta = nombre + " INT";
-//            this.soyRelacion = false;
-//        }
-//        else if(clase.equalsIgnoreCase("String"))
-//        {
-//            rta = nombre + " VARCHAR(255)";
-//            this.soyRelacion = false;
-//        }
-//        else if(clase.equalsIgnoreCase("LocalDate"))
-//        {
-//            rta = nombre + " TIMESTAMP NOT NULL";
-//            this.soyRelacion = false;
-//        }
-//        else if(clase.equalsIgnoreCase("LocalDateTime"))
-//        {
-//            rta = nombre + " TIMESTAMP NOT NULL";
-//            this.soyRelacion = false;
-//        }
-//        else
-//        {
-////            String primeraLetra = nombre.
-//            String nombrePMay = MasterUtil.capitalize(nombre);
-//            this.soyRelacion = true;
-//            this.nombreFK = "fk" + nombrePMay;
-//            rta = "fk" + nombrePMay + " INT";
-//        }
-//
-//        return rta;zz
-//    }
-
-
-//    public Class getClasePadreSiSoyHijo()
-//    {
-//        Class classPadre = null;
-//
-//        if(soyHijo)
-//        {
-//            try
-//            {
-//                classPadre = Class.forName(nombreClasePadre);
-//            }
-//            catch (Exception e)
-//            {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        return classPadre;
-//    }
     public String getNombreClasePadreSiSoyHijo()
     {
         String rta = "";
@@ -155,7 +118,7 @@ public class MetodoORM
     public String toString()
     {
         String rta = "";
-        String rtaLista = "METHODO : " + nombreMetodo + " | " + retType + "<" + tipoDeLaLista  + "> | soyLista : " + soyLista ;
+        String rtaLista = "METHODO : " + nombreMetodo + " | " + retType + "<" + tipoDeLaLista  + "> | soyLista : " + soyLista  + " | FK: " + getNombreFKSiSoyHijo();
         String rtaHijo ="METHODO : " + nombreMetodo + " | " + retType + " | soyHijo : " + soyHijo + " | nombreClasePadre: " + nombreClasePadre + " | FK:" + nombreFKSiSoyHijo;
         String rtaPrimitivo ="METHODO : " + nombreMetodo + " | " + retType;
 

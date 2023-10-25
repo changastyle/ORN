@@ -1,6 +1,6 @@
-package com.vd.ormn;
+package com.vd.orn;
 
-import com.vd.ormn.util.MasterUtil;
+import com.vd.orn.util.MasterUtil;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -26,5 +26,11 @@ public class AppTest extends TestCase
         String rta = MasterUtil.substringBetween(entrada, "name=\"", ",");
         System.out.println("SALIDA:" + rta);
 //        assertTrue( true );
+    }
+    public void testApp2()
+    {
+        ClaseORM claseORM = new ClaseORM("C:\\Users\\ngrossi\\Desktop\\ORMN\\src\\main\\java\\com\\vd\\orn\\MODEL\\Pais.java");
+        System.out.println("CLASE:" + claseORM);
+        System.out.println("RTA:" + claseORM.dameFKDelMethodoSegunAnnotation("instalacion",true) );;
     }
 }

@@ -1,4 +1,4 @@
-package com.vd.ormn;
+package com.vd.orn;
 
 public class AttrDB
 {

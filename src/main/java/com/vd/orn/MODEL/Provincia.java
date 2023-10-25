@@ -1,11 +1,10 @@
-package com.vd.ormn.MODEL;
+package com.vd.orn.MODEL;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "provincias")
@@ -18,7 +17,7 @@ public class Provincia
     private String nombre;
     @ManyToOne() @JoinColumn(name = "fkPais")
     private Pais pais1;
-    @OneToMany(mappedBy = "ciudadX")
-    private List<Ciudad> arrCiudades;
+//    @OneToMany(mappedBy = "ciudadX")
+//    private List<Ciudad> arrCiudades;
     private boolean activo;
 }

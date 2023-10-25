@@ -1,9 +1,7 @@
-package com.vd.ormn;
+package com.vd.orn;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +11,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ORN
@@ -160,11 +157,9 @@ public class ORN
 //
 //        return arrRtaSorted;
 //    }
-    public static List<File> readFolder( boolean verbose )
+    public static List<File> readFolder( String folderPath , boolean verbose )
     {
         List<File> arrFiles = new ArrayList<>();
-
-        String folderPath = ".\\src\\main\\java\\com\\vd\\ormn\\MODEL";
 
         // Convierte la ruta en un objeto Path
         Path folder = Paths.get(folderPath);
@@ -191,8 +186,7 @@ public class ORN
         return arrFiles;
     }
 
-
-    public static void crearTabla(ClaseORM claseDB)
+    public static Connection crearConectionDB()
     {
         Connection connection = null;
         String jdbcUrl = "jdbc:mysql://localhost:3305/orn?serverTimezone=America/New_York";
@@ -202,21 +196,40 @@ public class ORN
         try
         {
             connection = DriverManager.getConnection(jdbcUrl, username, password);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return connection;
+    }
+    public static void crearTabla(ClaseORM claseDB)
+    {
+        try
+        {
+            Connection connection = crearConectionDB();
 
             String createTableSQL = "CREATE TABLE " + claseDB.getNombreTabla() + " (" ;
 
+            int loop = 0;
             for(MetodoORM metodoLoop : claseDB.getArrMethodos() )
             {
-                createTableSQL += metodoLoop.getSQL() + ",";
+                loop ++;
+
+                createTableSQL += metodoLoop.getSQL();
+                if(loop < claseDB.getArrMethodos().size())
+                {
+                    createTableSQL += ",";
+                }
             }
 
-            createTableSQL = createTableSQL.substring(0 , createTableSQL.length() -1);
+//            createTableSQL = createTableSQL.substring(0 , createTableSQL.length() -1);
             createTableSQL += ")";
 
             Statement statement = connection.createStatement();
 
-            System.out.println("CREATE TABLE: "+ createTableSQL);
-            statement.execute(createTableSQL);
+            System.out.println("CREATE TABLE SQL COMMAND: "+ createTableSQL);
+//            statement.execute(createTableSQL);
             System.out.println("Table created successfully.");
         }
         catch (Exception e)
